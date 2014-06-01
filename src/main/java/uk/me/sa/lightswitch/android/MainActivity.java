@@ -18,11 +18,16 @@
  */
 package uk.me.sa.lightswitch.android;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends Activity {
+	private Logger log = LoggerFactory.getLogger(MainActivity.class);
+
 	enum Light {
 		L, R;
 	}
@@ -42,6 +47,6 @@ public class MainActivity extends Activity {
 	}
 	
 	private void toggleLight(Light light) {
-		
+		log.info("Toggle light {}", light);
 	}
 }
