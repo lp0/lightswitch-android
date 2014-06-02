@@ -104,7 +104,7 @@ public class MainActivity extends Activity {
 				RequestMessage req = new RequestMessage(secret, light);
 				try {
 					req.sendTo(node);
-					makeToast("Switched " + getString(light.name) + " light");
+					makeToast("Switched light \"" + getString(light.name) + "\"");
 				} catch (LocalMessageException e) {
 					makeToast("Error creating request");
 				} catch (RemoteMessageException e) {
