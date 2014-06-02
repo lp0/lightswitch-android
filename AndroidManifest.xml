@@ -18,28 +18,40 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uk.me.sa.lightswitch.android"
-    android:versionCode="1"
-    android:versionName="1.0" >
+	package="uk.me.sa.lightswitch.android"
+	android:versionCode="1"
+	android:versionName="1.0">
 
-    <uses-sdk
-        android:minSdkVersion="19"
-        android:targetSdkVersion="19" />
+	<uses-sdk
+		android:minSdkVersion="19"
+		android:targetSdkVersion="19"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name="uk.me.sa.lightswitch.android.MainActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+	<application
+		android:allowBackup="true"
+		android:icon="@drawable/ic_launcher"
+		android:label="@string/app_name"
+		android:theme="@style/AppTheme">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+		<activity
+			android:name=".ui.MainActivity"
+			android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+
+		<activity
+			android:name=".ui.SettingsActivity"
+			android:label="@string/action_settings">
+			<intent-filter>
+				<action android:name=".ui.SettingsActivity"/>
+
+				<category android:name="android.intent.category.PREFERENCE"/>
+			</intent-filter>
+		</activity>
+	</application>
 
 </manifest>

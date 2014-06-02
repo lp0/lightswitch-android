@@ -1,3 +1,4 @@
+package uk.me.sa.lightswitch.android.net;
 /*
 	lightswitch-android - Android Lightswitch Client
 
@@ -16,8 +17,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.me.sa.lightswitch.android;
-
-public enum Light {
-	L, R;
+public class LocalMessageException extends Exception {
+	private static final long serialVersionUID = 1L;
 }

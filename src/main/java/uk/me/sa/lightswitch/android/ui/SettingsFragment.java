@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+/*
 	lightswitch-android - Android Lightswitch Client
 
 	Copyright 2014  Simon Arlott
@@ -16,14 +15,18 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-<resources>
-    <string name="app_name">Lights</string>
-    <string name="left">Left</string>
-    <string name="right">Right</string>
-    <string name="action_settings">Settings</string>
-    <string name="pref_node_title">Node</string>
-    <string name="pref_node_summary">Hostname to send requests to</string>
-    <string name="pref_secret_title">Secret</string>
-    <string name="pref_secret_summary">Shared secret to authenticate requests</string>
-</resources>
+ */
+package uk.me.sa.lightswitch.android.ui;
+
+import uk.me.sa.lightswitch.android.R;
+import android.os.Bundle;
+import android.preference.PreferenceFragment;
+
+public class SettingsFragment extends PreferenceFragment {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		addPreferencesFromResource(R.xml.preferences);
+	}
+}
