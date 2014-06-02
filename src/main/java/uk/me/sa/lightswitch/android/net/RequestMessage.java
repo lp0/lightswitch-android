@@ -102,7 +102,7 @@ public class RequestMessage {
 			DatagramSocket s = new DatagramSocket();
 			
 			for (InetAddress address : addresses) {
-				log.debug("Sending {} bytes to {}", message.length, address);
+				log.trace("Sending {} bytes to {}", message.length, address);
 				
 				s.send(new DatagramPacket(message, message.length, new InetSocketAddress(address, SERVICE)));
 			}
@@ -124,7 +124,7 @@ public class RequestMessage {
 	}
 	
 	public void sendTo(String node) throws LocalMessageException, RemoteMessageException {
-		log.info("Sending light request {} to {}", light, node);
+		log.debug("Sending light request {} to {}", light, node);
 		
 		sendMessageTo(toByteArray(), node);
 	}
