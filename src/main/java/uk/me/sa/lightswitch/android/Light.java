@@ -18,31 +18,6 @@
  */
 package uk.me.sa.lightswitch.android;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-
-public class MainActivity extends Activity {
-	private Logger log = LoggerFactory.getLogger(MainActivity.class);
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-	}
-	
-	public void leftButton(View view) {
-		toggleLight(Light.L);
-	}
-	
-	public void rightButton(View view) {
-		toggleLight(Light.R);
-	}
-	
-	private void toggleLight(Light light) {
-		log.info("Toggle light {}", light);
-	}
+public enum Light {
+	L, R;
 }
