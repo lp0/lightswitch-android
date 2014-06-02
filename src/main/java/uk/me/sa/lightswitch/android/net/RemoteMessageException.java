@@ -1,4 +1,3 @@
-package uk.me.sa.lightswitch.android.net;
 /*
 	lightswitch-android - Android Lightswitch Client
 
@@ -17,6 +16,8 @@ package uk.me.sa.lightswitch.android.net;
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package uk.me.sa.lightswitch.android.net;
+
 public class RemoteMessageException extends Exception {
 	private static final long serialVersionUID = 1L;
 }

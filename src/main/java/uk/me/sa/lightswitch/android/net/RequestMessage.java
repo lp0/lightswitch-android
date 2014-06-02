@@ -57,7 +57,7 @@ public class RequestMessage {
 		this.light = light;
 	}
 
-	private String createJSONRequest() throws JSONException {
+	String createJSONRequest() throws JSONException {
 		JSONObject jso = new JSONObject();
 		jso.put("ts", now);
 		jso.put("light", light.id);
@@ -65,7 +65,7 @@ public class RequestMessage {
 		return jso.toString();
 	}
 
-	private String createJSONMessage(String request) throws UnsupportedEncodingException, IllegalStateException, GeneralSecurityException, JSONException {
+	String createJSONMessage(String request) throws UnsupportedEncodingException, IllegalStateException, GeneralSecurityException, JSONException {
 		Mac hmac = Mac.getInstance("Hmac" + HASH);
 		SecretKeySpec key = new SecretKeySpec(secret.getBytes("US-ASCII"), "Hmac" + HASH);
 		hmac.init(key);
@@ -78,7 +78,7 @@ public class RequestMessage {
 		return jso.toString();
 	}
 
-	private byte[] toByteArray() throws LocalMessageException {
+	byte[] toByteArray() throws LocalMessageException {
 		try {
 			return createJSONMessage(createJSONRequest()).getBytes(UTF8);
 		} catch (UnsupportedEncodingException e) {
@@ -96,7 +96,7 @@ public class RequestMessage {
 		}
 	}
 	
-	private void sendMessageTo(byte[] message, String node) throws RemoteMessageException {
+	void sendMessageTo(byte[] message, String node) throws RemoteMessageException {
 		try {
 			InetAddress[] addresses = InetAddress.getAllByName(node);
 			DatagramSocket s = new DatagramSocket();
