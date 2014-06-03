@@ -28,6 +28,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.crypto.Mac;
@@ -45,7 +47,7 @@ public class RequestMessage {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final String HASH = "SHA256";
 	private static final int SERVICE = 4094;
-	
+
 	private Logger log = LoggerFactory.getLogger(RequestMessage.class);
 
 	private String secret;
@@ -97,37 +99,50 @@ public class RequestMessage {
 			throw new LocalMessageException(e);
 		}
 	}
-	
+
 	private void sendMessageTo(byte[] message, String node) throws RemoteMessageException {
 		try {
-			InetAddress[] addresses = InetAddress.getAllByName(node);
 			DatagramSocket s = new DatagramSocket();
-			
-			for (InetAddress address : addresses) {
-				log.trace("Sending {} bytes to {}", message.length, address);
-				
-				s.send(new DatagramPacket(message, message.length, new InetSocketAddress(address, SERVICE)));
+
+			try {
+				InetAddress[] addresses = InetAddress.getAllByName(node);
+				List<IOException> failed = new ArrayList<IOException>(addresses.length);
+
+				for (InetAddress address : addresses) {
+					log.trace("Sending {} bytes to {}", message.length, address);
+
+					try {
+						s.send(new DatagramPacket(message, message.length, new InetSocketAddress(address, SERVICE)));
+					} catch (IOException e) {
+						log.warn("Error sending datagram packet", e);
+						failed.add(e);
+					}
+				}
+
+				if (failed.size() == addresses.length) {
+					log.error("Error sending all datagram packets");
+					throw new RemoteMessageException(failed.get(0));
+				} else if (!failed.isEmpty()) {
+					log.error("Error sending some (but not all) datagram packets");
+				}
+			} catch (UnknownHostException e) {
+				log.error("Error resolving hostname", e);
+				throw new RemoteMessageException(e);
+			} catch (RuntimeException e) {
+				log.error("Error sending request message", e);
+				throw new RemoteMessageException(e);
+			} finally {
+				s.close();
 			}
-			
-			s.close();
-		} catch (UnknownHostException e) {
-			log.error("Error resolving hostname", e);
-			throw new RemoteMessageException(e);
 		} catch (SocketException e) {
 			log.error("Error creating socket", e);
 			throw new RemoteMessageException(e);
-		} catch (IOException e) {
-			log.error("Error sending datagram packet", e);
-			throw new RemoteMessageException(e);
-		} catch (RuntimeException e) {
-			log.error("Error sending request message", e);
-			throw new RemoteMessageException(e);
 		}
 	}
-	
+
 	public void sendTo(String node) throws LocalMessageException, RemoteMessageException {
 		log.debug("Sending light request {} to {}", light, node);
-		
+
 		sendMessageTo(toByteArray(), node);
 	}
 }
