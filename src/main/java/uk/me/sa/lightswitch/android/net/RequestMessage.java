@@ -19,7 +19,6 @@
 package uk.me.sa.lightswitch.android.net;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import uk.me.sa.lightswitch.android.data.Light;
 
 public class RequestMessage {
+	private static final Charset ASCII = Charset.forName("US-ASCII");
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final String HASH = "SHA256";
 	private static final int SERVICE = 4094;
@@ -67,9 +67,9 @@ public class RequestMessage {
 		return jso.toString();
 	}
 
-	private String createJSONMessage() throws UnsupportedEncodingException, IllegalStateException, GeneralSecurityException, JSONException {
+	private String createJSONMessage() throws IllegalStateException, GeneralSecurityException, JSONException {
 		Mac hmac = Mac.getInstance("Hmac" + HASH);
-		SecretKeySpec key = new SecretKeySpec(secret.getBytes("US-ASCII"), "Hmac" + HASH);
+		SecretKeySpec key = new SecretKeySpec(secret.getBytes(ASCII), "Hmac" + HASH);
 		hmac.init(key);
 
 		String request = createJSONRequest();
@@ -85,9 +85,6 @@ public class RequestMessage {
 	private byte[] toByteArray() throws LocalMessageException {
 		try {
 			return createJSONMessage().getBytes(UTF8);
-		} catch (UnsupportedEncodingException e) {
-			log.error("Unable to encode request message", e);
-			throw new LocalMessageException(e);
 		} catch (GeneralSecurityException e) {
 			log.error("Unable to sign request message", e);
 			throw new LocalMessageException(e);
