@@ -57,7 +57,7 @@ public class RequestMessage {
 		this.light = light;
 	}
 
-	String createJSONRequest() throws JSONException {
+	private String createJSONRequest() throws JSONException {
 		JSONObject jso = new JSONObject();
 		jso.put("ts", now);
 		jso.put("light", light.id);
@@ -65,10 +65,12 @@ public class RequestMessage {
 		return jso.toString();
 	}
 
-	String createJSONMessage(String request) throws UnsupportedEncodingException, IllegalStateException, GeneralSecurityException, JSONException {
+	private String createJSONMessage() throws UnsupportedEncodingException, IllegalStateException, GeneralSecurityException, JSONException {
 		Mac hmac = Mac.getInstance("Hmac" + HASH);
 		SecretKeySpec key = new SecretKeySpec(secret.getBytes("US-ASCII"), "Hmac" + HASH);
 		hmac.init(key);
+
+		String request = createJSONRequest();
 		String digest = new String(Hex.encodeHex(hmac.doFinal(request.getBytes(UTF8))));
 
 		JSONObject jso = new JSONObject();
@@ -78,25 +80,25 @@ public class RequestMessage {
 		return jso.toString();
 	}
 
-	byte[] toByteArray() throws LocalMessageException {
+	private byte[] toByteArray() throws LocalMessageException {
 		try {
-			return createJSONMessage(createJSONRequest()).getBytes(UTF8);
+			return createJSONMessage().getBytes(UTF8);
 		} catch (UnsupportedEncodingException e) {
 			log.error("Unable to encode request message", e);
-			throw new LocalMessageException();
+			throw new LocalMessageException(e);
 		} catch (GeneralSecurityException e) {
 			log.error("Unable to sign request message", e);
-			throw new LocalMessageException();
+			throw new LocalMessageException(e);
 		} catch (JSONException e) {
 			log.error("Unable to create request message", e);
-			throw new LocalMessageException();
+			throw new LocalMessageException(e);
 		} catch (RuntimeException e) {
 			log.error("Error creating request message", e);
-			throw new LocalMessageException();
+			throw new LocalMessageException(e);
 		}
 	}
 	
-	void sendMessageTo(byte[] message, String node) throws RemoteMessageException {
+	private void sendMessageTo(byte[] message, String node) throws RemoteMessageException {
 		try {
 			InetAddress[] addresses = InetAddress.getAllByName(node);
 			DatagramSocket s = new DatagramSocket();
@@ -110,16 +112,16 @@ public class RequestMessage {
 			s.close();
 		} catch (UnknownHostException e) {
 			log.error("Error resolving hostname", e);
-			throw new RemoteMessageException();
+			throw new RemoteMessageException(e);
 		} catch (SocketException e) {
 			log.error("Error creating socket", e);
-			throw new RemoteMessageException();
+			throw new RemoteMessageException(e);
 		} catch (IOException e) {
 			log.error("Error sending datagram packet", e);
-			throw new RemoteMessageException();
+			throw new RemoteMessageException(e);
 		} catch (RuntimeException e) {
 			log.error("Error sending request message", e);
-			throw new RemoteMessageException();
+			throw new RemoteMessageException(e);
 		}
 	}
 	

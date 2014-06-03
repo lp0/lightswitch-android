@@ -20,4 +20,12 @@ package uk.me.sa.lightswitch.android.net;
 
 public class LocalMessageException extends Exception {
 	private static final long serialVersionUID = 1L;
+
+	public LocalMessageException(String detailMessage) {
+		super(detailMessage);
+	}
+
+	public LocalMessageException(Throwable throwable) {
+		super(throwable);
+	}
 }
