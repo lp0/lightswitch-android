@@ -83,14 +83,14 @@ public class MainActivity extends Activity {
 		String secret = prefs.getString("secret", "");
 		
 		if (node.isEmpty()) {
-			log.warn("Node not configured");
-			makeToast("Node not configured");
+			log.warn(getString(R.string.pref_node_missing));
+			makeToast(getString(R.string.pref_node_missing));
 			return;
 		}
 		
 		if (secret.isEmpty()) {
-			log.warn("Secret not configured");
-			makeToast("Secret not configured");
+			log.warn(getString(R.string.pref_secret_missing));
+			makeToast(getString(R.string.pref_secret_missing));
 			return;
 		}
 		
@@ -104,11 +104,11 @@ public class MainActivity extends Activity {
 				RequestMessage req = new RequestMessage(secret, light);
 				try {
 					req.sendTo(node);
-					makeToast("Switched light \"" + getString(light.name) + "\"");
+					makeToast(String.format(getString(R.string.switched_light), getString(light.name)));
 				} catch (LocalMessageException e) {
-					makeToast("Error creating request");
+					makeToast(getString(R.string.error_local));
 				} catch (RemoteMessageException e) {
-					makeToast("Error sending request to " + node);
+					makeToast(String.format(getString(R.string.error_remote), node));
 				}
 			}
 		}.start();

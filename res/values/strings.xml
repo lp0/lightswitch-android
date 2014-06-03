@@ -24,6 +24,11 @@
     <string name="action_settings">Settings</string>
     <string name="pref_node_title">Node</string>
     <string name="pref_node_summary">Hostname to send requests to</string>
+    <string name="pref_node_missing">Node not configured</string>
     <string name="pref_secret_title">Secret</string>
     <string name="pref_secret_summary">Shared secret to authenticate requests</string>
+    <string name="pref_secret_missing">Secret not configured</string>
+    <string name="error_local">Error creating request</string>
+    <string name="error_remote">Error sending request to %1$s</string>
+    <string name="switched_light">Switched light \"%1$s\"</string>
 </resources>
