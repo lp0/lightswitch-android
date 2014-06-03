@@ -22,10 +22,11 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-import java.util.regex.Pattern;
 
 import org.hamcrest.MatcherAssert;
 import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,31 +50,52 @@ public class TestRequestMessage {
 
 	@Test
 	public void testRequestLeft() throws JSONException {
-		MatcherAssert.assertThat(new RequestMessage("secret", Light.LEFT).createJSONRequest(),
-			PatternMatcher.matches("\\{\"ts\":[0-9]+,\"nonce\":\"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}\",\"light\":\"L\"\\}"));
+		String json = new RequestMessage("secret", Light.LEFT).createJSONRequest();
+		JSONObject jsonObj = new JSONObject(json);
+
+		Assert.assertNotEquals(jsonObj.getInt("ts"), 0);
+		Assert.assertEquals(jsonObj.getString("light"), "L");
+		MatcherAssert.assertThat(jsonObj.getString("nonce"),
+			PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
 	}
 
 	@Test
 	public void testRequestRight() throws JSONException {
-		MatcherAssert.assertThat(new RequestMessage("secret", Light.RIGHT).createJSONRequest(),
-			PatternMatcher.matches("\\{\"ts\":[0-9]+,\"nonce\":\"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}\",\"light\":\"R\"\\}"));
-	}
+		String json = new RequestMessage("secret", Light.RIGHT).createJSONRequest();
+		JSONObject jsonObj = new JSONObject(json);
+
+		Assert.assertNotEquals(jsonObj.getInt("ts"), 0);
+		Assert.assertEquals(jsonObj.getString("light"), "R");
+		MatcherAssert.assertThat(jsonObj.getString("nonce"),
+			PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));	}
 
 	@Test
 	public void testMessageLeft() throws JSONException, UnsupportedEncodingException, IllegalStateException, GeneralSecurityException {
 		RequestMessage req = new RequestMessage("secret", Light.LEFT);
 		String json = req.createJSONRequest();
-		MatcherAssert.assertThat(req.createJSONMessage(json),
-				PatternMatcher.matches("\\{\"hash\":\"SHA256\",\"request\":\""
-						+ Pattern.quote(json.replace("\\", "\\\\").replace("\"", "\\\"")) + "\",\"digest\":\"[0-9a-f]{64}\"\\}"));
+		String json2 = req.createJSONMessage(json);
+		JSONObject json2Obj = new JSONObject(json2);
+
+		Assert.assertEquals(json2Obj.getString("hash"), "SHA256");
+		Assert.assertEquals(json2Obj.getString("request"), json);
+		MatcherAssert.assertThat(json2Obj.getString("digest"), PatternMatcher.matches("[0-9a-f]{64}"));
+
+		// TODO verify digest
 	}
 
 	@Test
 	public void testMessageRight() throws JSONException, UnsupportedEncodingException, IllegalStateException, GeneralSecurityException {
 		RequestMessage req = new RequestMessage("secret", Light.RIGHT);
 		String json = req.createJSONRequest();
-		MatcherAssert.assertThat(req.createJSONMessage(json),
-				PatternMatcher.matches("\\{\"hash\":\"SHA256\",\"request\":\""
-						+ Pattern.quote(json.replace("\\", "\\\\").replace("\"", "\\\"")) + "\",\"digest\":\"[0-9a-f]{64}\"\\}"));
+		String json2 = req.createJSONMessage(json);
+		JSONObject json2Obj = new JSONObject(json2);
+
+		Assert.assertEquals(json2Obj.getString("hash"), "SHA256");
+		Assert.assertEquals(json2Obj.getString("request"), json);
+		MatcherAssert.assertThat(json2Obj.getString("digest"), PatternMatcher.matches("[0-9a-f]{64}"));
+
+		// TODO verify digest
 	}
+
+	// TODO run test against localhost
 }
