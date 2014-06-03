@@ -197,6 +197,7 @@
 					<effort>Max</effort>
 					<includeTests>true</includeTests>
 					<threshold>Low</threshold>
+					<excludeFilterFile>src/test/resources/findbugs-exclude.xml</excludeFilterFile>
 				</configuration>
 			</plugin>
 			<plugin>
