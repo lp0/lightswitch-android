@@ -31,7 +31,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -66,7 +67,13 @@ public class TestRequestMessage {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	@Mock
-	InetAddress address;
+	InetAddress address1;
+
+	@Mock
+	InetAddress address2;
+
+	@Mock
+	InetAddress address3;
 
 	@Mock
 	DatagramSocket socket;
@@ -76,7 +83,8 @@ public class TestRequestMessage {
 		mockStatic(Log.class);
 
 		mockStatic(InetAddress.class);
-		when(InetAddress.getAllByName("test.node.invalid")).thenReturn(new InetAddress[] { address });
+		when(InetAddress.getAllByName("test.node.invalid")).thenReturn(new InetAddress[] { address1 });
+		when(InetAddress.getAllByName("test.nodes.invalid")).thenReturn(new InetAddress[] { address1, address2, address3 });
 
 		whenNew(DatagramSocket.class).withAnyArguments().thenReturn(socket);
 
@@ -85,26 +93,21 @@ public class TestRequestMessage {
 
 	@Test
 	public void testMessageLeft() throws Exception {
-		// Prepare to capture packet
-		final AtomicReference<byte[]> data = new AtomicReference<byte[]>();
+		CapturePackets capture = new CapturePackets();
 
-		doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				DatagramPacket packet = (DatagramPacket)invocation.getArguments()[0];
-				data.set(Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength()));
-				return null;
-			}
-		}).when(socket).send(Mockito.isA(DatagramPacket.class));
-
+		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401822383746L);
+
 
 		// Send message
 		new RequestMessage("secret1", Light.LEFT).sendTo("test.node.invalid");
 
+
 		// Check message content
-		assertNotNull(data.get());
-		JSONObject msg = new JSONObject(new String(data.get(), UTF8));
+		assertEquals(1, capture.getCount(address1));
+		assertNotNull(capture.getData(address1));
+
+		JSONObject msg = new JSONObject(new String(capture.getData(address1), UTF8));
 
 		assertEquals("SHA256", msg.getString("hash"));
 		assertThat(msg.getString("digest"), PatternMatcher.matches("[0-9a-f]{64}"));
@@ -127,18 +130,9 @@ public class TestRequestMessage {
 
 	@Test
 	public void testMessageRight() throws Exception {
-		// Prepare to capture packet
-		final AtomicReference<byte[]> data = new AtomicReference<byte[]>();
+		CapturePackets capture = new CapturePackets();
 
-		doAnswer(new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable {
-				DatagramPacket packet = (DatagramPacket)invocation.getArguments()[0];
-				data.set(Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength()));
-				return null;
-			}
-		}).when(socket).send(Mockito.isA(DatagramPacket.class));
-
+		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401822469944L);
 
 
@@ -147,8 +141,10 @@ public class TestRequestMessage {
 
 
 		// Check message content
-		assertNotNull(data.get());
-		JSONObject msg = new JSONObject(new String(data.get(), UTF8));
+		assertEquals(1, capture.getCount(address1));
+		assertNotNull(capture.getData(address1));
+
+		JSONObject msg = new JSONObject(new String(capture.getData(address1), UTF8));
 
 		assertEquals("SHA256", msg.getString("hash"));
 		assertThat(msg.getString("digest"), PatternMatcher.matches("[0-9a-f]{64}"));
@@ -164,8 +160,64 @@ public class TestRequestMessage {
 		Mac hmac = Mac.getInstance("HmacSHA256");
 		SecretKeySpec key = new SecretKeySpec("secret2".getBytes("US-ASCII"), "HmacSHA256");
 		hmac.init(key);
-		String digest = new String(Hex.encodeHex(hmac.doFinal(msg.getString("request").getBytes("UTF-8"))));
+		String digest = new String(Hex.encodeHex(hmac.doFinal(msg.getString("request").getBytes(UTF8))));
 
 		assertEquals(digest, msg.getString("digest"));
+	}
+
+	@Test
+	public void testMultipleMessages() throws Exception {
+		CapturePackets capture = new CapturePackets();
+
+		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
+		when(System.currentTimeMillis()).thenReturn(1401823296160L);
+
+
+		// Send message
+		new RequestMessage("secret1", Light.LEFT).sendTo("test.nodes.invalid");
+
+
+		// Check message content
+		assertEquals(1, capture.getCount(address1));
+		assertNotNull(capture.getData(address1));
+
+		JSONObject msg1 = new JSONObject(new String(capture.getData(address1), UTF8));
+		JSONObject req1 = new JSONObject(msg1.getString("request"));
+
+		assertEquals(1401823296, req1.getInt("ts"));
+
+		assertEquals(1, capture.getCount(address2));
+		assertNotNull(capture.getData(address2));
+		assertEquals(1, capture.getCount(address3));
+		assertNotNull(capture.getData(address3));
+
+		assertEquals(new String(capture.getData(address1), UTF8), new String(capture.getData(address2), UTF8));
+		assertEquals(new String(capture.getData(address1), UTF8), new String(capture.getData(address3), UTF8));
+	}
+
+	static class CapturePackets implements Answer<Void> {
+		private Map<InetAddress, byte[]> data = new IdentityHashMap<InetAddress, byte[]>();
+		private Map<InetAddress, Integer> count = new IdentityHashMap<InetAddress, Integer>();
+
+		@Override
+		public Void answer(InvocationOnMock invocation) throws Throwable {
+			DatagramPacket packet = (DatagramPacket)invocation.getArguments()[0];
+			Integer num = count.get(packet.getAddress());
+
+			if (num == null)
+				num = 0;
+			count.put(packet.getAddress(), num + 1);
+
+			data.put(packet.getAddress(), Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength()));
+			return null;
+		}
+
+		public byte[] getData(InetAddress address) {
+			return data.get(address);
+		}
+
+		public int getCount(InetAddress address) {
+			return count.get(address);
+		}
 	}
 }
