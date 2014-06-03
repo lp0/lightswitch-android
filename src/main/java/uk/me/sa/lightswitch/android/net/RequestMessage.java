@@ -116,7 +116,10 @@ public class RequestMessage {
 					}
 				}
 
-				if (failed.size() == addresses.length) {
+				if (addresses.length == 0) {
+					log.error("No hosts to send to");
+					throw new RemoteMessageException(new IllegalArgumentException("No hosts to send to"));
+				} else if (failed.size() == addresses.length) {
 					log.error("Error sending all datagram packets");
 					throw new RemoteMessageException(failed.get(0));
 				} else if (!failed.isEmpty()) {
