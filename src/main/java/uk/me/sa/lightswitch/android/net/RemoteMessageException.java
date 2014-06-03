@@ -21,10 +21,6 @@ package uk.me.sa.lightswitch.android.net;
 public class RemoteMessageException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public RemoteMessageException(String detailMessage) {
-		super(detailMessage);
-	}
-
 	public RemoteMessageException(Throwable throwable) {
 		super(throwable);
 	}
