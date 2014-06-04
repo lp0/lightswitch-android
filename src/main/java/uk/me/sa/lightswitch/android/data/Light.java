@@ -21,11 +21,11 @@ package uk.me.sa.lightswitch.android.data;
 import uk.me.sa.lightswitch.android.R;
 
 public enum Light {
-	LEFT ("L", R.string.left),
-	RIGHT ("R", R.string.right);
-	
+	LEFT ("L", R.string.left), RIGHT ("R", R.string.right);
+
 	public final String id;
 	public final int name;
+
 	private Light(String id, int name) {
 		this.id = id;
 		this.name = name;

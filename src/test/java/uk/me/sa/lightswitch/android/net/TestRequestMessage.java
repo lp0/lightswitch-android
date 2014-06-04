@@ -67,12 +67,8 @@ import com.btmatthews.hamcrest.regex.PatternMatcher;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(value = TestRequestMessage.class, fullyQualifiedNames = {
-	"android.util.Log",
-	"java.net.InetAddress",
-	"java.lang.System",
-	"uk.me.sa.lightswitch.android.net.RequestMessage"
-})
+@PrepareForTest(value = TestRequestMessage.class, fullyQualifiedNames = { "android.util.Log", "java.net.InetAddress", "java.lang.System",
+		"uk.me.sa.lightswitch.android.net.RequestMessage" })
 @PowerMockIgnore("javax.crypto.*")
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class TestRequestMessage {
@@ -89,10 +85,10 @@ public class TestRequestMessage {
 
 	@Mock
 	DatagramSocket socket;
-	
+
 	@Mock
 	JSONObject jsonMock;
-	
+
 	@Mock(answer = Answers.RETURNS_SMART_NULLS)
 	SecretKeySpec keyMock;
 
@@ -118,10 +114,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401822383746L);
 
-
 		// Send message
 		new RequestMessage("secret1", Light.LEFT).sendTo("test.node.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -137,7 +131,6 @@ public class TestRequestMessage {
 		assertEquals(1401822383, req.getInt("ts"));
 		assertEquals("L", req.getString("light"));
 		assertThat(req.getString("nonce"), PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
-
 
 		// Check message digest
 		Mac hmac = Mac.getInstance("HmacSHA256");
@@ -155,10 +148,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401822469944L);
 
-
 		// Send message
 		new RequestMessage("secret2", Light.RIGHT).sendTo("test.node.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -174,7 +165,6 @@ public class TestRequestMessage {
 		assertEquals(1401822469, req.getInt("ts"));
 		assertEquals("R", req.getString("light"));
 		assertThat(req.getString("nonce"), PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
-
 
 		// Check message digest
 		Mac hmac = Mac.getInstance("HmacSHA256");
@@ -192,10 +182,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -222,10 +210,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -252,10 +238,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -282,10 +266,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -312,10 +294,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -342,10 +322,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -372,10 +350,8 @@ public class TestRequestMessage {
 		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
 		when(System.currentTimeMillis()).thenReturn(1401823296160L);
 
-
 		// Send message
 		new RequestMessage("secret3", Light.LEFT).sendTo("test.nodes.invalid");
-
 
 		// Check message content
 		assertEquals(1, capture.getCount(address1));
@@ -394,57 +370,57 @@ public class TestRequestMessage {
 		assertEquals(new String(capture.getData(address1), UTF8), new String(capture.getData(address2), UTF8));
 		assertEquals(new String(capture.getData(address1), UTF8), new String(capture.getData(address3), UTF8));
 	}
-	
+
 	@Test(expected = RemoteMessageException.class)
 	public void testMessageNoHosts() throws Exception {
 		doThrow(new IOException()).when(socket).send(Mockito.isA(DatagramPacket.class));
 		new RequestMessage("secret4", Light.LEFT).sendTo("empty.node.invalid");
 	}
-	
+
 	@Test(expected = LocalMessageException.class)
 	public void testLocalJSONException() throws Exception {
 		doAnswer(new CapturePackets()).when(socket).send(Mockito.isA(DatagramPacket.class));
-		
+
 		whenNew(JSONObject.class).withAnyArguments().thenReturn(jsonMock);
 		doThrow(new JSONException("")).when(jsonMock).put(Mockito.anyString(), Mockito.any());
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("test.node.invalid");
 	}
-	
+
 	@Test(expected = LocalMessageException.class)
 	public void testLocalNullPointerException() throws Exception {
 		doAnswer(new CapturePackets()).when(socket).send(Mockito.isA(DatagramPacket.class));
-		
+
 		whenNew(JSONObject.class).withAnyArguments().thenReturn(jsonMock);
 		when(jsonMock.toString()).thenReturn(null);
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("test.node.invalid");
 	}
-	
+
 	@Test(expected = LocalMessageException.class)
 	public void testLocalGeneralSecurityException() throws Exception {
 		doAnswer(new CapturePackets()).when(socket).send(Mockito.isA(DatagramPacket.class));
-		
+
 		whenNew(SecretKeySpec.class).withAnyArguments().thenReturn(keyMock);
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("test.node.invalid");
 	}
-	
+
 	@Test(expected = RemoteMessageException.class)
 	public void testRemoteUnknownHostException() throws Exception {
 		doAnswer(new CapturePackets()).when(socket).send(Mockito.isA(DatagramPacket.class));
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("unknown.node.invalid");
 	}
-	
+
 	@Test(expected = RemoteMessageException.class)
 	public void testRemoteSocketException() throws Exception {
 		/*
 		 * https://code.google.com/p/powermock/issues/detail?id=366
-		 *
+		 * 
 		 * whenNew(DatagramSocket.class).withAnyArguments().thenThrow(new SocketException());
 		 */
-		
+
 		final AtomicBoolean workaroundPowerMockBug = new AtomicBoolean(true);
 		whenNew(DatagramSocket.class).withAnyArguments().thenAnswer(new Answer<DatagramSocket>() {
 			@Override
@@ -455,18 +431,18 @@ public class TestRequestMessage {
 			}
 		});
 		workaroundPowerMockBug.set(false);
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("test.node.invalid");
 	}
-	
+
 	@Test(expected = RemoteMessageException.class)
 	public void testRemoteNullPointerException() throws Exception {
 		/*
 		 * https://code.google.com/p/powermock/issues/detail?id=366
-		 *
+		 * 
 		 * whenNew(DatagramPacket.class).withAnyArguments().thenThrow(new NullPointerException());
 		 */
-		
+
 		final AtomicBoolean workaroundPowerMockBug = new AtomicBoolean(true);
 		whenNew(DatagramPacket.class).withAnyArguments().thenAnswer(new Answer<DatagramPacket>() {
 			@Override
@@ -477,7 +453,7 @@ public class TestRequestMessage {
 			}
 		});
 		workaroundPowerMockBug.set(false);
-		
+
 		new RequestMessage("secret4", Light.LEFT).sendTo("test.node.invalid");
 	}
 

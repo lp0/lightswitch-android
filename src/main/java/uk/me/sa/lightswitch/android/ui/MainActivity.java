@@ -53,19 +53,19 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case R.id.action_settings:
-	            openSettings();
-	            return true;
-	            
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			openSettings();
+			return true;
+
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
-	
+
 	private void openSettings() {
 		startActivity(new Intent(MainActivity.this, SettingsActivity.class));
 	}
@@ -73,31 +73,31 @@ public class MainActivity extends Activity {
 	public void leftButton(View view) {
 		toggleLight(Light.LEFT);
 	}
-	
+
 	public void rightButton(View view) {
 		toggleLight(Light.RIGHT);
 	}
-	
+
 	private void toggleLight(Light light) {
 		String node = prefs.getString("node", "");
 		String secret = prefs.getString("secret", "");
-		
+
 		if (node.isEmpty()) {
 			log.warn(getString(R.string.pref_node_missing));
 			makeToast(getString(R.string.pref_node_missing));
 			return;
 		}
-		
+
 		if (secret.isEmpty()) {
 			log.warn(getString(R.string.pref_secret_missing));
 			makeToast(getString(R.string.pref_secret_missing));
 			return;
 		}
-		
+
 		log.info("Toggle light {}", light);
 		toggleLight(node, secret, light);
 	}
-	
+
 	private void toggleLight(final String node, final String secret, final Light light) {
 		new Thread() {
 			public void run() {
@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
 			}
 		}.start();
 	}
-	
+
 	private void makeToast(final String text) {
 		runOnUiThread(new Runnable() {
 			@Override
