@@ -51,14 +51,16 @@ import uk.me.sa.lightswitch.android.net.RemoteMessageException;
 import uk.me.sa.lightswitch.android.net.RequestMessage;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 17)
 @PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity_",
 		// This is not ideal...
 		"uk.me.sa.lightswitch.android.ui.MainActivity_$1", "uk.me.sa.lightswitch.android.ui.MainActivity_$2",
 		"uk.me.sa.lightswitch.android.ui.MainActivity_$3", "uk.me.sa.lightswitch.android.ui.MainActivity_$4" })
 @PowerMockIgnore({ "*" })
-@RunWith(RobolectricTestRunner.class)
+@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class TestMainActivity {
 	@Rule
 	public PowerMockRule rule = new PowerMockRule();

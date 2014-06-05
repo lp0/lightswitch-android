@@ -26,8 +26,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
-@Config(emulateSdk = 17)
 @RunWith(RobolectricTestRunner.class)
+@Config(emulateSdk = 17)
 public class TestSettingsActivity {
 	/* Needs robolectric-2.4 (https://github.com/robolectric/robolectric/issues/992) */
 	@Ignore
