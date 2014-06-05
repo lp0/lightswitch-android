@@ -38,7 +38,9 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowHandler;
+import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowPreferenceManager;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ActivityController;
@@ -47,6 +49,7 @@ import uk.me.sa.lightswitch.android.R;
 import uk.me.sa.lightswitch.android.net.LocalMessageException;
 import uk.me.sa.lightswitch.android.net.RemoteMessageException;
 import uk.me.sa.lightswitch.android.net.RequestMessage;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 @Config(emulateSdk = 17)
@@ -202,5 +205,13 @@ public class TestMainActivity {
 		assertEquals("Switched light \"Right\"", ShadowToast.getTextOfLatestToast());
 	}
 
-	// TODO openSettings
+	@Test
+	public void openSettings() throws Exception {
+		activity.openSettings();
+
+		ShadowActivity shadowActivity = Robolectric.shadowOf_(activity);
+		Intent startedIntent = shadowActivity.getNextStartedActivity();
+		ShadowIntent shadowIntent = Robolectric.shadowOf_(startedIntent);
+		assertEquals(SettingsActivity.class.getName(), shadowIntent.getComponent().getClassName());
+	}
 }
