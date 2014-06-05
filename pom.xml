@@ -133,7 +133,7 @@
 						<includes>
 							<include>**/*.java</include>
 						</includes>
-						<parallel>methods</parallel>
+						<!-- <parallel>methods</parallel> breaks Robolectric -->
 					</configuration>
 				</plugin>
 			</plugins>
