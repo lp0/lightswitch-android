@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+/*
 	lightswitch-android - Android Lightswitch Client
 
 	Copyright 2014  Simon Arlott
@@ -16,10 +15,15 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item
-		android:id="@+id/menu_settings"
-		android:showAsAction="never"
-		android:title="@string/menu_settings"/>
-</menu>
+ */
+package uk.me.sa.lightswitch.android.data;
+
+import org.androidannotations.annotations.sharedpreferences.SharedPref;
+import org.androidannotations.annotations.sharedpreferences.SharedPref.Scope;
+
+@SharedPref(value = Scope.APPLICATION_DEFAULT)
+public interface Prefs {
+	String node();
+
+	String secret();
+}

@@ -32,7 +32,6 @@
 		android:layout_margin="10dp"
 		android:layout_weight="1"
 		android:minHeight="128dp"
-		android:onClick="leftButton"
 		android:text="@string/left"/>
 	
 	<Button
@@ -42,6 +41,5 @@
 		android:layout_margin="10dp"
 		android:layout_weight="1"
 		android:minHeight="128dp"
-		android:onClick="rightButton"
 		android:text="@string/right"/>
 </LinearLayout>

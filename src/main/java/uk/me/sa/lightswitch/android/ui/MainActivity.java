@@ -18,69 +18,54 @@
  */
 package uk.me.sa.lightswitch.android.ui;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.me.sa.lightswitch.android.R;
 import uk.me.sa.lightswitch.android.data.Light;
+import uk.me.sa.lightswitch.android.data.Prefs_;
 import uk.me.sa.lightswitch.android.net.LocalMessageException;
 import uk.me.sa.lightswitch.android.net.RemoteMessageException;
 import uk.me.sa.lightswitch.android.net.RequestMessage;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+@EActivity(R.layout.activity_main)
+@OptionsMenu(R.menu.main_activity_actions)
 public class MainActivity extends Activity {
 	private Logger log = LoggerFactory.getLogger(MainActivity.class);
 
-	private SharedPreferences prefs;
+	@Pref
+	Prefs_ prefs;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		setContentView(R.layout.activity_main);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main_activity_actions, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_settings:
-			openSettings();
-			return true;
-
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	private void openSettings() {
+	@OptionsItem(R.id.menu_settings)
+	void openSettings() {
 		startActivity(new Intent(MainActivity.this, SettingsActivity.class));
 	}
 
-	public void leftButton(View view) {
+	@Click(R.id.button_left)
+	void leftButton(View view) {
 		toggleLight(Light.LEFT);
 	}
 
-	public void rightButton(View view) {
+	@Click(R.id.button_right)
+	void rightButton(View view) {
 		toggleLight(Light.RIGHT);
 	}
 
-	private void toggleLight(Light light) {
-		String node = prefs.getString("node", "");
-		String secret = prefs.getString("secret", "");
+	@Background
+	void toggleLight(Light light) {
+		String node = prefs.node().get();
+		String secret = prefs.secret().get();
 
 		if (node.isEmpty()) {
 			log.warn(getString(R.string.pref_node_missing));
@@ -95,31 +80,19 @@ public class MainActivity extends Activity {
 		}
 
 		log.info("Toggle light {}", light);
-		toggleLight(node, secret, light);
+
+		try {
+			new RequestMessage(secret, light).sendTo(node);
+			makeToast(String.format(getString(R.string.switched_light), getString(light.name)));
+		} catch (LocalMessageException e) {
+			makeToast(getString(R.string.error_local));
+		} catch (RemoteMessageException e) {
+			makeToast(String.format(getString(R.string.error_remote), node));
+		}
 	}
 
-	private void toggleLight(final String node, final String secret, final Light light) {
-		new Thread() {
-			public void run() {
-				RequestMessage req = new RequestMessage(secret, light);
-				try {
-					req.sendTo(node);
-					makeToast(String.format(getString(R.string.switched_light), getString(light.name)));
-				} catch (LocalMessageException e) {
-					makeToast(getString(R.string.error_local));
-				} catch (RemoteMessageException e) {
-					makeToast(String.format(getString(R.string.error_remote), node));
-				}
-			}
-		}.start();
-	}
-
-	private void makeToast(final String text) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-			}
-		});
+	@UiThread
+	void makeToast(String text) {
+		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 	}
 }

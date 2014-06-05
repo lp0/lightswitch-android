@@ -50,9 +50,10 @@ import uk.me.sa.lightswitch.android.net.RequestMessage;
 import android.content.SharedPreferences;
 
 @Config(emulateSdk = 17)
-@PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity$1",
-		"uk.me.sa.lightswitch.android.ui.MainActivity$2" /* This is not ideal... */
-})
+@PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity_",
+		// This is not ideal...
+		"uk.me.sa.lightswitch.android.ui.MainActivity_$1", "uk.me.sa.lightswitch.android.ui.MainActivity_$2",
+		"uk.me.sa.lightswitch.android.ui.MainActivity_$3", "uk.me.sa.lightswitch.android.ui.MainActivity_$4" })
 @PowerMockIgnore({ "*" })
 @RunWith(RobolectricTestRunner.class)
 public class TestMainActivity {
@@ -60,8 +61,8 @@ public class TestMainActivity {
 	public PowerMockRule rule = new PowerMockRule();
 
 	SharedPreferences sharedPreferences;
-	ActivityController<MainActivity> controller;
-	MainActivity activity;
+	ActivityController<MainActivity_> controller;
+	MainActivity_ activity;
 
 	@Mock
 	RequestMessage requestMessage;
@@ -72,7 +73,7 @@ public class TestMainActivity {
 		PowerMockito.whenNew(RequestMessage.class).withAnyArguments().thenReturn(requestMessage);
 		ShadowToast.reset();
 		sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(Robolectric.application.getApplicationContext());
-		controller = Robolectric.buildActivity(MainActivity.class);
+		controller = Robolectric.buildActivity(MainActivity_.class);
 		activity = controller.create().start().resume().visible().get();
 	}
 
