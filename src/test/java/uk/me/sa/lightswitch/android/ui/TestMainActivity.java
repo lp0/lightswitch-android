@@ -54,7 +54,7 @@ import android.content.SharedPreferences;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(emulateSdk = 17)
+@Config(emulateSdk = 18)
 @PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity_",
 		// This is not ideal...
 		"uk.me.sa.lightswitch.android.ui.MainActivity_$1", "uk.me.sa.lightswitch.android.ui.MainActivity_$2",
