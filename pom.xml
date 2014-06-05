@@ -221,6 +221,22 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<instrumentation>
+						<excludes>
+							<exclude>**/*_.class</exclude>
+							<exclude>**/*_$*.class</exclude>
+							<exclude>**/BuildConfig.class</exclude>
+							<exclude>**/R.class</exclude>
+							<exclude>**/R$*.class</exclude>
+						</excludes>
+					</instrumentation>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
