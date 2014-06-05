@@ -25,10 +25,16 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -38,12 +44,21 @@ import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ActivityController;
 
 import uk.me.sa.lightswitch.android.R;
+import uk.me.sa.lightswitch.android.net.LocalMessageException;
+import uk.me.sa.lightswitch.android.net.RemoteMessageException;
 import uk.me.sa.lightswitch.android.net.RequestMessage;
 import android.content.SharedPreferences;
 
 @Config(emulateSdk = 17)
+@PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity$1",
+		"uk.me.sa.lightswitch.android.ui.MainActivity$2" /* This is not ideal... */
+})
+@PowerMockIgnore({ "*" })
 @RunWith(RobolectricTestRunner.class)
 public class TestMainActivity {
+	@Rule
+	public PowerMockRule rule = new PowerMockRule();
+
 	SharedPreferences sharedPreferences;
 	ActivityController<MainActivity> controller;
 	MainActivity activity;
@@ -53,6 +68,7 @@ public class TestMainActivity {
 
 	@Before
 	public void create() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		PowerMockito.whenNew(RequestMessage.class).withAnyArguments().thenReturn(requestMessage);
 		ShadowToast.reset();
 		sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(Robolectric.application.getApplicationContext());
@@ -65,14 +81,14 @@ public class TestMainActivity {
 		controller.pause().stop().destroy();
 	}
 
-	Callable<Boolean> newToastIsAdded() {
-		return new Callable<Boolean>() {
-			public Boolean call() throws Exception {
-				ShadowHandler.runMainLooperToEndOfTasks();
-				Robolectric.runUiThreadTasks();
-				return ShadowToast.shownToastCount() > 0;
-			}
-		};
+	private static final Callable<Boolean> NON_ZERO_TOAST_COUNT = new NonZeroToastCount();
+
+	private static class NonZeroToastCount implements Callable<Boolean> {
+		public Boolean call() throws Exception {
+			ShadowHandler.runMainLooperToEndOfTasks();
+			Robolectric.runUiThreadTasks();
+			return ShadowToast.shownToastCount() > 0;
+		}
 	}
 
 	@Test
@@ -81,7 +97,7 @@ public class TestMainActivity {
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Node not configured", ShadowToast.getTextOfLatestToast());
 	}
 
@@ -91,32 +107,43 @@ public class TestMainActivity {
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Secret not configured", ShadowToast.getTextOfLatestToast());
 	}
 
 	@Test
 	public void clickLeft() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
+		sharedPreferences.edit().putString("node", "test.node.invalid").commit();
 		sharedPreferences.edit().putString("secret", "test").commit();
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Switched light \"Left\"", ShadowToast.getTextOfLatestToast());
 	}
 
-	// TODO clickLeftLocalError
+	@Test
+	public void clickLeftLocalError() throws Exception {
+		sharedPreferences.edit().putString("node", "localhost").commit();
+		sharedPreferences.edit().putString("secret", "test").commit();
+
+		Mockito.doThrow(new LocalMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
+		Robolectric.clickOn(activity.findViewById(R.id.button_left));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error creating request", ShadowToast.getTextOfLatestToast());
+	}
 
 	@Test
 	public void clickLeftRemoteError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost.invalid").commit();
+		sharedPreferences.edit().putString("node", "localhost").commit();
 		sharedPreferences.edit().putString("secret", "test").commit();
 
+		Mockito.doThrow(new RemoteMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
-		await().until(newToastIsAdded());
-		assertEquals("Error sending request to localhost.invalid", ShadowToast.getTextOfLatestToast());
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error sending request to localhost", ShadowToast.getTextOfLatestToast());
 	}
 
 	@Test
@@ -125,7 +152,7 @@ public class TestMainActivity {
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Node not configured", ShadowToast.getTextOfLatestToast());
 	}
 
@@ -135,21 +162,32 @@ public class TestMainActivity {
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Secret not configured", ShadowToast.getTextOfLatestToast());
 	}
 
-	// TODO clickRightLocalError
+	@Test
+	public void clickRightLocalError() throws Exception {
+		sharedPreferences.edit().putString("node", "localhost").commit();
+		sharedPreferences.edit().putString("secret", "test").commit();
+
+		Mockito.doThrow(new LocalMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
+		Robolectric.clickOn(activity.findViewById(R.id.button_right));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error creating request", ShadowToast.getTextOfLatestToast());
+	}
 
 	@Test
 	public void clickRightRemoteError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost.invalid").commit();
+		sharedPreferences.edit().putString("node", "localhost").commit();
 		sharedPreferences.edit().putString("secret", "test").commit();
 
+		Mockito.doThrow(new RemoteMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
-		await().until(newToastIsAdded());
-		assertEquals("Error sending request to localhost.invalid", ShadowToast.getTextOfLatestToast());
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error sending request to localhost", ShadowToast.getTextOfLatestToast());
 	}
 
 	@Test
@@ -159,7 +197,7 @@ public class TestMainActivity {
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
-		await().until(newToastIsAdded());
+		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Switched light \"Right\"", ShadowToast.getTextOfLatestToast());
 	}
 
