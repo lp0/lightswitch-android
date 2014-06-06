@@ -20,6 +20,8 @@ package uk.me.sa.lightswitch.android.ui;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.verifyNew;
 
 import java.util.concurrent.Callable;
 
@@ -46,6 +48,7 @@ import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ActivityController;
 
 import uk.me.sa.lightswitch.android.R;
+import uk.me.sa.lightswitch.android.data.Light;
 import uk.me.sa.lightswitch.android.net.LocalMessageException;
 import uk.me.sa.lightswitch.android.net.RemoteMessageException;
 import uk.me.sa.lightswitch.android.net.RequestMessage;
@@ -119,13 +122,16 @@ public class TestMainActivity {
 
 	@Test
 	public void clickLeft() throws Exception {
-		sharedPreferences.edit().putString("node", "test.node.invalid").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "left.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_left").commit();
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
 		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Switched light \"Left\"", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_left", Light.LEFT);
+		verify(requestMessage).sendTo("left.node.invalid");
 	}
 
 	@Test
@@ -198,13 +204,16 @@ public class TestMainActivity {
 
 	@Test
 	public void clickRight() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "right.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_right").commit();
 
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
 		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Switched light \"Right\"", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_right", Light.RIGHT);
+		verify(requestMessage).sendTo("right.node.invalid");
 	}
 
 	@Test
