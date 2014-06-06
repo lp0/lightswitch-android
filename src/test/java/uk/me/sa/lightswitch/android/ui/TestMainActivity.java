@@ -58,19 +58,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
-@PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity", "uk.me.sa.lightswitch.android.ui.MainActivity_",
-		// This is not ideal...
-		"uk.me.sa.lightswitch.android.ui.MainActivity_$1", "uk.me.sa.lightswitch.android.ui.MainActivity_$2",
-		"uk.me.sa.lightswitch.android.ui.MainActivity_$3", "uk.me.sa.lightswitch.android.ui.MainActivity_$4" })
-@PowerMockIgnore({ "*" })
+@PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity" })
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class TestMainActivity {
-	@Rule
-	public PowerMockRule rule = new PowerMockRule();
-
 	SharedPreferences sharedPreferences;
 	ActivityController<MainActivity_> controller;
 	MainActivity_ activity;
+
+	@Rule
+	public PowerMockRule rule = new PowerMockRule();
 
 	@Mock
 	RequestMessage requestMessage;
