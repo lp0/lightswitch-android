@@ -136,26 +136,32 @@ public class TestMainActivity {
 
 	@Test
 	public void clickLeftLocalError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "left.local.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_left_local").commit();
 
 		Mockito.doThrow(new LocalMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
 		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Error creating request", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_left_local", Light.LEFT);
+		verify(requestMessage).sendTo("left.local.node.invalid");
 	}
 
 	@Test
 	public void clickLeftRemoteError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "left.remote.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_left_remote").commit();
 
 		Mockito.doThrow(new RemoteMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_left));
 
 		await().until(NON_ZERO_TOAST_COUNT);
-		assertEquals("Error sending request to localhost", ShadowToast.getTextOfLatestToast());
+		assertEquals("Error sending request to left.remote.node.invalid", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_left_remote", Light.LEFT);
+		verify(requestMessage).sendTo("left.remote.node.invalid");
 	}
 
 	@Test
@@ -180,26 +186,32 @@ public class TestMainActivity {
 
 	@Test
 	public void clickRightLocalError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "right.local.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_right_local").commit();
 
 		Mockito.doThrow(new LocalMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
 		await().until(NON_ZERO_TOAST_COUNT);
 		assertEquals("Error creating request", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_right_local", Light.RIGHT);
+		verify(requestMessage).sendTo("right.local.node.invalid");
 	}
 
 	@Test
 	public void clickRightRemoteError() throws Exception {
-		sharedPreferences.edit().putString("node", "localhost").commit();
-		sharedPreferences.edit().putString("secret", "test").commit();
+		sharedPreferences.edit().putString("node", "right.remote.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_right_remote").commit();
 
 		Mockito.doThrow(new RemoteMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
 		Robolectric.clickOn(activity.findViewById(R.id.button_right));
 
 		await().until(NON_ZERO_TOAST_COUNT);
-		assertEquals("Error sending request to localhost", ShadowToast.getTextOfLatestToast());
+		assertEquals("Error sending request to right.remote.node.invalid", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_right_remote", Light.RIGHT);
+		verify(requestMessage).sendTo("right.remote.node.invalid");
 	}
 
 	@Test
