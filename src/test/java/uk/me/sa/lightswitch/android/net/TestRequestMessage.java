@@ -129,7 +129,7 @@ public class TestRequestMessage {
 		JSONObject req = new JSONObject(msg.getString("request"));
 
 		assertEquals(1401822383, req.getInt("ts"));
-		assertEquals("L", req.getString("light"));
+		assertEquals("R", req.getString("light"));
 		assertThat(req.getString("nonce"), PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
 
 		// Check message digest
@@ -163,7 +163,7 @@ public class TestRequestMessage {
 		JSONObject req = new JSONObject(msg.getString("request"));
 
 		assertEquals(1401822469, req.getInt("ts"));
-		assertEquals("R", req.getString("light"));
+		assertEquals("L", req.getString("light"));
 		assertThat(req.getString("nonce"), PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
 
 		// Check message digest
