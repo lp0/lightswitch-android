@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>org.robolectric</groupId>
 			<artifactId>robolectric</artifactId>
-			<version>2.3</version>
+			<version>2.4-SNAPSHOT</version>
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
@@ -155,7 +155,8 @@
 						<includes>
 							<include>**/*.java</include>
 						</includes>
-						<!-- <parallel>methods</parallel> breaks Robolectric -->
+						<parallel>classes</parallel>
+						<reuseForks>false</reuseForks>
 					</configuration>
 				</plugin>
 			</plugins>

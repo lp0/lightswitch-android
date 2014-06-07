@@ -29,7 +29,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -38,7 +37,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowHandler;
@@ -56,12 +54,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@RunWith(RobolectricTestRunner.class)
 @Config(emulateSdk = 18)
 @PrepareForTest(fullyQualifiedNames = { "uk.me.sa.lightswitch.android.ui.MainActivity" })
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
-public class TestMainActivity {
+public abstract class AbstractTestMainActivity {
 	SharedPreferences sharedPreferences;
 	ActivityController<MainActivity_> controller;
 	MainActivity_ activity;
