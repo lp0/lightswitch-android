@@ -15,7 +15,7 @@ install:
   - cd __robolectric__
   - ./scripts/install-maps-jar.sh
   - ./scripts/install-support-jar.sh
-  - mvn -B -V -DskipTests=true install
+  - mvn -q -B -V -DskipTests=true install
   - cd ..
   - rm -rf __robolectric__
 script:
