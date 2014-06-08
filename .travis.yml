@@ -1,6 +1,6 @@
 language: java
 before_install:
-  - sudo apt-get install gcc-multilib g++-multilib zlib1g:i386
+  - sudo apt-get install gcc-multilib g++-multilib zlib1g:i386 openjdk-6-jdk
 install:
   - mkdir __android-sdk__
   - cd __android-sdk__
@@ -18,5 +18,8 @@ install:
   - mvn -B -V -DskipTests=true install
   - cd ..
   - rm -rf __robolectric__
+script:
+  - mvn install -DskipTests=true -B -V -Djarsigner.skip=true
+  - mvn test -B
 after_script:
   - "[ $TRAVIS_TEST_RESULT -ne 0 ] && head -n 500 target/surefire-reports/*.txt"
