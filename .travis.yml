@@ -18,8 +18,8 @@ install:
   - mvn -q -B -V -DskipTests=true install
   - cd ..
   - rm -rf __robolectric__
-script:
   - mvn install -DskipTests=true -B -V -Djarsigner.skip=true
-  - mvn test -B
+script:
+  - mvn test -B -V
 after_script:
   - "[ $TRAVIS_TEST_RESULT -ne 0 ] && head -n 500 target/surefire-reports/*.txt"
