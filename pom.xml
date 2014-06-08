@@ -37,7 +37,7 @@
 		<cobertura.version>2.5.2</cobertura.version>
 	</properties>
 	<prerequisites>
-		<maven>3.0.5</maven>
+		<maven>3.1.1</maven>
 	</prerequisites>
 	<dependencies>
 		<dependency>
@@ -187,7 +187,7 @@
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.2</version>
 				<extensions>true</extensions>
 				<configuration>
 					<sdk>

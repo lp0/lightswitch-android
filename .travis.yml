@@ -1,1 +1,17 @@
 language: java
+before_install:
+  - wget -nv http://dl.google.com/android/android-sdk_r22.3-linux.tgz
+  - tar -xzf android-sdk_r22.3-linux.tgz
+  - export ANDROID_HOME="$PWD/android-sdk-linux"
+  - export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+  - echo y | android update sdk --filter platform-tools,android-18,addon-google_apis-google-18,extra-android-m2repository --no-ui --force
+  - ./scripts/install-maps-jar.sh
+  - ./scripts/install-support-jar.sh
+install:
+  - git clone --depth=1 --branch=sa git://github.com/lp0/robolectric.git __robolectric__
+  - cd __robolectric__
+  - mvn -B -V -DskipTests=true install
+  - cd ..
+  - rm -rf __robolectric__
+after_script:
+  - "[ $TRAVIS_TEST_RESULT -ne 0 ] && head -n 500 target/surefire-reports/*.txt"
