@@ -1,6 +1,6 @@
 language: java
 before_install:
-  - sudo apt-get install gcc-multilib
+  - sudo apt-get install gcc-multilib g++-multilib zlib1g:i386
 install:
   - mkdir __android-sdk__
   - cd __android-sdk__
