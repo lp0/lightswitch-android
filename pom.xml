@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.me.sa</groupId>
 	<artifactId>lightswitch-android</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>apk</packaging>
 	<name>lightswitch (Android)</name>
 	<description>Android Lightswitch Client</description>
@@ -32,9 +32,10 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
-		<androidannotations.version>3.0.1</androidannotations.version>
-		<powermock.version>1.5.5</powermock.version>
+		<androidannotations.version>3.2</androidannotations.version>
+		<powermock.version>1.6.1</powermock.version>
 		<!-- 2.6 has issues: https://github.com/robolectric/robolectric/issues/1026 -->
+		<!-- 2.7 has issues: http://jira.codehaus.org/browse/MCOBERTURA-204 -->
 		<cobertura.version>2.5.2</cobertura.version>
 	</properties>
 	<prerequisites>
@@ -50,7 +51,7 @@
 		<dependency>
 			<groupId>eu.lp0.slf4j</groupId>
 			<artifactId>slf4j-android</artifactId>
-			<version>1.7.10-0</version>
+			<version>1.7.12-0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -142,7 +143,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.10</version>
+			<version>1.7.12</version>
 		</dependency>
 	</dependencies>
 	<build>
