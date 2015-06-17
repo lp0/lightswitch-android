@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.me.sa</groupId>
 	<artifactId>lightswitch-android</artifactId>
-	<version>1.0</version>
+	<version>1.1</version>
 	<packaging>apk</packaging>
 	<name>lightswitch (Android)</name>
 	<description>Android Lightswitch Client</description>

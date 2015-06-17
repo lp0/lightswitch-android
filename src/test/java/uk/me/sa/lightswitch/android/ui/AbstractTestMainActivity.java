@@ -1,7 +1,7 @@
 /*
 	lightswitch-android - Android Lightswitch Client
 
-	Copyright 2014  Simon Arlott
+	Copyright 2014-2015  Simon Arlott
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -156,6 +156,70 @@ public abstract class AbstractTestMainActivity {
 
 		verifyNew(RequestMessage.class).withArguments("test_left_remote", Light.LEFT);
 		verify(requestMessage).sendTo("left.remote.node.invalid");
+	}
+
+	@Test
+	public void clickCentreUnconfiguredNode() throws Exception {
+		sharedPreferences.edit().putString("node", "").putString("secret", "").commit();
+
+		Robolectric.clickOn(activity.findViewById(R.id.button_centre));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Node not configured", ShadowToast.getTextOfLatestToast());
+	}
+
+	@Test
+	public void clickCentreUnconfiguredSecret() throws Exception {
+		sharedPreferences.edit().putString("node", "localhost").putString("secret", "").commit();
+
+		Robolectric.clickOn(activity.findViewById(R.id.button_centre));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Secret not configured", ShadowToast.getTextOfLatestToast());
+	}
+
+	@Test
+	public void clickCentre() throws Exception {
+		sharedPreferences.edit().putString("node", "centre.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_centre").commit();
+
+		Robolectric.clickOn(activity.findViewById(R.id.button_centre));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Switched light \"Centre\"", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_centre", Light.CENTRE);
+		verify(requestMessage).sendTo("centre.node.invalid");
+	}
+
+	@Test
+	public void clickCentreLocalError() throws Exception {
+		sharedPreferences.edit().putString("node", "centre.local.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_centre_local").commit();
+
+		Mockito.doThrow(new LocalMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
+		Robolectric.clickOn(activity.findViewById(R.id.button_centre));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error creating request", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_centre_local", Light.CENTRE);
+		verify(requestMessage).sendTo("centre.local.node.invalid");
+	}
+
+	@Test
+	public void clickCentreRemoteError() throws Exception {
+		sharedPreferences.edit().putString("node", "centre.remote.node.invalid").commit();
+		sharedPreferences.edit().putString("secret", "test_centre_remote").commit();
+
+		Mockito.doThrow(new RemoteMessageException(null)).when(requestMessage).sendTo(Mockito.anyString());
+		Robolectric.clickOn(activity.findViewById(R.id.button_centre));
+
+		await().until(NON_ZERO_TOAST_COUNT);
+		assertEquals("Error sending request to centre.remote.node.invalid", ShadowToast.getTextOfLatestToast());
+
+		verifyNew(RequestMessage.class).withArguments("test_centre_remote", Light.CENTRE);
+		verify(requestMessage).sendTo("centre.remote.node.invalid");
 	}
 
 	@Test

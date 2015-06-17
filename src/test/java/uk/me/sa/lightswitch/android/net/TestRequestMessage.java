@@ -1,7 +1,7 @@
 /*
 	lightswitch-android - Android Lightswitch Client
 
-	Copyright 2014  Simon Arlott
+	Copyright 2014-2015  Simon Arlott
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -137,6 +137,40 @@ public class TestRequestMessage {
 		SecretKeySpec key = new SecretKeySpec("secret1".getBytes("US-ASCII"), "HmacSHA256");
 		hmac.init(key);
 		String digest = new String(Hex.encodeHex(hmac.doFinal(msg.getString("request").getBytes("UTF-8"))));
+
+		assertEquals(digest, msg.getString("digest"));
+	}
+
+	@Test
+	public void testMessageCentre() throws Exception {
+		CapturePackets capture = new CapturePackets();
+
+		doAnswer(capture).when(socket).send(Mockito.isA(DatagramPacket.class));
+		when(System.currentTimeMillis()).thenReturn(1401822469944L);
+
+		// Send message
+		new RequestMessage("secret2", Light.CENTRE).sendTo("test.node.invalid");
+
+		// Check message content
+		assertEquals(1, capture.getCount(address1));
+		assertNotNull(capture.getData(address1));
+
+		JSONObject msg = new JSONObject(new String(capture.getData(address1), UTF8));
+
+		assertEquals("SHA256", msg.getString("hash"));
+		assertThat(msg.getString("digest"), PatternMatcher.matches("[0-9a-f]{64}"));
+
+		JSONObject req = new JSONObject(msg.getString("request"));
+
+		assertEquals(1401822469, req.getInt("ts"));
+		assertEquals("C", req.getString("light"));
+		assertThat(req.getString("nonce"), PatternMatcher.matches("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}"));
+
+		// Check message digest
+		Mac hmac = Mac.getInstance("HmacSHA256");
+		SecretKeySpec key = new SecretKeySpec("secret2".getBytes("US-ASCII"), "HmacSHA256");
+		hmac.init(key);
+		String digest = new String(Hex.encodeHex(hmac.doFinal(msg.getString("request").getBytes(UTF8))));
 
 		assertEquals(digest, msg.getString("digest"));
 	}

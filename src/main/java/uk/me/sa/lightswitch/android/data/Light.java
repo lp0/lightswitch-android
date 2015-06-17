@@ -1,7 +1,7 @@
 /*
 	lightswitch-android - Android Lightswitch Client
 
-	Copyright 2014  Simon Arlott
+	Copyright 2014-2015  Simon Arlott
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ package uk.me.sa.lightswitch.android.data;
 import uk.me.sa.lightswitch.android.R;
 
 public enum Light {
-	LEFT ("R", R.string.left), RIGHT ("L", R.string.right);
+	LEFT ("R", R.string.left), CENTRE ("C", R.string.centre), RIGHT ("L", R.string.right);
 
 	public final String id;
 	public final int name;

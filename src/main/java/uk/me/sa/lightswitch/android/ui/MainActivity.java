@@ -1,7 +1,7 @@
 /*
 	lightswitch-android - Android Lightswitch Client
 
-	Copyright 2014  Simon Arlott
+	Copyright 2014-2015  Simon Arlott
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -55,6 +55,11 @@ public class MainActivity extends Activity {
 	@Click(R.id.button_left)
 	void leftButton(View view) {
 		toggleLight(Light.LEFT);
+	}
+
+	@Click(R.id.button_centre)
+	void centreButton(View view) {
+		toggleLight(Light.CENTRE);
 	}
 
 	@Click(R.id.button_right)
